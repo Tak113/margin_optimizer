@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Threshold Classifier</title>
+	<!-- CSS only -->
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1" crossorigin="anonymous">
+	<link rel="stylesheet" href="./style.css">
+</head>
+<!-- execute javascript function main() from main.js immediately after a page has been loaded -->
+<body onload="main()">
+	<!-- JavaScript Bundle with Popper -->
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.bundle.min.js" integrity="sha384-ygbV9kiqUc6oa4msXn9868pTtWMgiQaeYH7/t7LECLbyPA2x65Kgf80OJFdroafW" crossorigin="anonymous"></script>
+	<script src="https://d3js.org/d3.v5.min.js"></script>
+	<script src="./main.js"></script>
+
+<!-- nav bar -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-secondary">
+	<div class="container">
+		<a href="#" class="navbar-brand"><h3 class="mb-1">D3 ShowCase</h2></a>
+		<button class="navbar-toggler" data-toggle="collapse" data-target="#navbarCollapse">
+			<span class="navbar-toggler-icon"></span>
+		</button>
+		<div class="collapse navbar-collapse" id="navbarCollapse">
+			<ul class="navbar-nav ml-auto">
+				<li class="nav-item h5 mb-0">
+					<a href="#" class="nav-link active">Boundary</a>
+				</li>
+				<li class="nav-item h5 mb-0">
+					<a href="#" class="nav-link">Hierarchy</a>
+				</li>
+				<li class="nav-item h5 mb-0">
+					<a href="#" class="nav-link">Modulation</a>
+				</li>
+			</ul>
+		</div>
+	</div>
+</nav>
+
+<section id="scenario" class="py-5 bg-dark">
+	<div class="container">
+
+		<div class="col">
+			<div class="h3 pt-3 pb-2 text-white">Decision Boundary Classifier</div>
+			<div class="lead pb-5 text-white">
+				Lorem ipsum dolor sit amet consectetur, adipisicing elit. Itaque nesciunt, temporibus dolorum autem tempore. Aut nostrum eaque culpa porro veniam tempora molestias itaque facere iure maxime pariatur, natus illo asperiores fuga tenetur quibusdam in debitis at similique, fugit soluta inventore placeat sequi voluptates. Atque officiis cum eveniet omnis deleniti, velit.
+			</div>
+		</div>
+		
+		<div class="col">
+			<div class="h3 py-2 text-white">Boundary in two distributions</div>
+			<div class="h6 text-white pb-3">
+				Lorem ipsum dolor, sit amet consectetur, adipisicing elit. Exercitationem perferendis repellat esse, quod a quidem molestiae nam illo dicta nesciunt porro natus in architecto, facilis dolorum at repellendus itaque sapiente asperiores laudantium et atque tempora! Debitis nulla architecto eligendi quidem, nihil iste quia praesentium ratione aliquid eveniet porro quisquam, nisi aspernatur voluptas obcaecati doloremque minima ullam. Harum sapiente quas ea excepturi aspernatur nisi quidem aperiam laudantium quaerat laborum id voluptatem inventore maxime ullam molestias hic, sed officiis aliquid rem pariatur perspiciatis ratione. Rerum in, dolorum nostrum facere ratione accusamus, at quas, incidunt iusto voluptate praesentium a quis qui sapiente, eaque?
+			</div>
+		</div>
+
+		<table class="table">	
+			<tr>
+				<td>&nbsp;</td>	
+				<td colspan=3 class="h4 text-white">	
+					Loan Applications: Two Scenario
+				</td>
+			</tr>	
+			<tr>
+				<td valign="top">
+					<table>
+ 						<tr>
+ 							<td width="250" valign="top" align="right">
+    					  		<div style="margin-top:44px">
+    					  			<strong class="text-white">Credit Score</strong><br>
+    					  			<div class="text-secondary h6 small">
+    					  			higher scores represent higher likelihood of payback
+    					  			</div>
+    					  		</div>
+    						</td>
+    					</tr>
+    					<tr>
+    						<td width="250" valign="bottom" align="right">
+    							<div style="margin-top:160px" class="text-secondary h6 small">
+	    							each circle represents a person,
+    								with dark circles showing people who pay back their
+    								loans and light circles showing people who default
+    							</div>
+    						</td>
+    					</tr>
+    					<tr>
+    						<td width="250" valign="bottom" align="right">
+    							<div style="margin-top:15px"><strong class="text-white">Color</strong></div>
+    						</td>
+    					</tr>
+					</table>
+				</td>
+				<td valign="top">
+					<div class="h5 mb-5 text-white">A. Clean separation</div>
+					<div id="plain-histogram0" class="text-secondary"></div>
+					<div id="plain-histogram-legend0" class="h6 small text-secondary"></div>
+				</td>
+				<td width=1>&nbsp;</td>
+				<td valign="top">
+					<div class="h5 mb-5 text-white">B. Overlapping Categories</div>
+					<div id="plain-histogram1" class="text-secondary"></div>
+					<div id="plain-histogram-legend1" class="text-secondary h6 small"></div>
+				</td>
+			</tr>
+		</table>
+
+		<div class="col">
+			<div class="h3 pt-5 pb-2 text-white">Threshold Metrics</div>
+			<div class="h6 text-white pb-3">
+				Lorem ipsum dolor sit amet consectetur adipisicing elit. Magni modi saepe et, blanditiis voluptatum vel dolore nobis nisi dignissimos cupiditate assumenda enim, facere unde? Repudiandae sunt saepe est, totam tempore adipisci voluptatem a? Doloribus blanditiis corrupti delectus animi ducimus, quisquam id deleniti dolore error quibusdam quos ad nemo. Vero, similique atque. Sit, labore! Quibusdam sunt optio alias voluptatibus doloribus rem inventore quod dolor molestias earum. Cupiditate qui ab aperiam quidem dicta impedit animi quod. Quam aperiam modi veritatis earum incidunt explicabo, aut, esse accusantium iusto, alias a officia necessitatibus officiis ad! Aliquam pariatur illum autem doloremque voluptates possimus quibusdam in cumque, harum ducimus explicabo ea dolorem, id, nam eveniet odit. Totam consequatur quisquam, ipsa ad minima sint dicta distinctio beatae cum doloremque corporis nobis recusandae pariatur numquam! Accusantium consectetur, sit ipsam neque illum eos, et. Itaque, nemo? Quod sequi possimus labore enim deserunt suscipit voluptates ratione at magni laborum quos nobis aperiam, cupiditate molestiae nam commodi accusamus quaerat excepturi veritatis perferendis! Et harum beatae tempore inventore reprehenderit repellendus quod repellat quae non? Quae ullam dignissimos velit tempore, culpa atque, rerum nobis quos ea assumenda maxime suscipit amet voluptatibus dolorum cumque mollitia animi, consectetur! Maxime similique iusto aliquid est libero a!
+			</div>
+		</div>
+
+		<table class="table">
+			<tr>
+				<td>&nbsp;</td>
+				<td colspan=3>
+					<div class="h4 text-white">Simulating Loan Thresholds</div>
+					<div class="text-secondary h6">
+						Drag the white threshold bar left or right to change the cut-offs for loans
+					</div>
+				</td>
+			</tr>
+			<tr>
+				<td valign="top">
+					<table>
+ 						<tr>
+ 							<td width="250" valign="top" align="right">
+    					  		<div style="margin-top:44px">
+    					  			<strong class="text-white">Credit Score</strong><br>
+    					  			<div class="text-secondary h6 small">
+    					  			higher scores represent higher likelihood of payback
+    					  			</div>
+    					  		</div>
+    						</td>
+    					</tr>
+    					<tr>
+    						<td width="250" valign="bottom" align="right">
+    							<div style="margin-top:160px" class="text-secondary h6 small">
+	    							each circle represents a person,
+    								with dark circles showing people who pay back their
+    								loans and light circles showing people who default
+    							</div>
+    						</td>
+    					</tr>
+    					<tr>
+    						<td width="250" valign="bottom" align="right">
+    							<div style="margin-top:15px"><strong class="text-white">Color</strong></div>
+    						</td>
+    					</tr>
+					</table>
+				</td>
+				<td valign="top">
+					<div class="h5 mb-5 text-white">Threshold Decision</div>
+					<div id="single-histogram0" class="text-secondary"></div>
+					<div id="single-histogram-legend0" class="h6 small text-secondary"></div>
+				</td>
+				<td width=30>&nbsp;</td>
+				<td valign="top">
+					<div class="h5 mb-4 ml-2 text-white">Outcome</div>
+					<div id="single-correct0" class="text-secondary h6 small"></div>
+					<div id="single-pies0" class="text-secondary h6 small"></div>
+					<div class="h6 text-white">Profit: <span id="single-profit0"></span></div>
+				</td>
+			</tr>
+		</table>
+
+		<div class="col pt-4">
+			<div class="h6 text-secondary">
+				This dashboard simulation is referenced from google AI lab
+			</div>
+		</div>
+
+	</div>
+</section>
+
+
+
+</body>
+</html>
