@@ -4,8 +4,9 @@
 function main() {
 
 	// set values of true positives vs. false positives
-	var tprValue = 300;
-	var fprValue = -700;
+	var tprValue = 10;
+	var fprValue = -5;
+	var mfgValue = -5;
 
 	// make models to represent different distributions
 	var distributionExample0 = new GroupModel(makeNormalItems(0, 1, 150, 70, 7)
@@ -40,9 +41,11 @@ function main() {
 
 	function updateTextDisplays(event) {
 		// update number readouts
+		// 100 of mfgValue is same as # of samples set for makeNormalItems
 		function display(id, value) {
 			var element = document.getElementById(id);
-			element.innerHTML = '' + value;
+			value = value + mfgValue * 100
+			element.innerHTML = '' + value + 'M USD';
 			element.style.color = value < 0 ? '#f00' : 'white';
 		}
 		display('single-profit0', singleModel.profit);
@@ -149,6 +152,7 @@ function profit(items, tprValue, fprValue) {
 			sum += item.value == 1 ? tprValue : fprValue;
 		}
 	});
+	sum = sum;
 	return sum;
 }
 
@@ -331,7 +335,7 @@ function createHistogram(id, model, noThreshold, includeAnnotation) {
 	var cutoff = svg.append('rect').attr('x', tx - 2).attr('y', topY - 10)
 		.attr('width', 3).attr('height', height - topY).style('fill','white');
 
-	var thresholdLabel = svg.append('text').text('loan threshold: 50')
+	var thresholdLabel = svg.append('text').text('yield threshold: 50')
 		.attr('x', tx)
 		.attr('y', 40)
 		.attr('text-anchor', 'middle')
@@ -348,7 +352,7 @@ function createHistogram(id, model, noThreshold, includeAnnotation) {
 		var rounded = SIDE * Math.round(tx / SIDE);
 		cutoff.attr('x', rounded);
 		var labelX = Math.max(50, Math.min(rounded, width - 70));
-		thresholdLabel.attr('x', labelX).text('loan threshold: ' + t);
+		thresholdLabel.attr('x', labelX).text('yield threshold: ' + t);
 		svg.selectAll('.icon').call(defineIcon);
 	}
 	var drag = d3.drag()
@@ -376,7 +380,7 @@ function createHistogram(id, model, noThreshold, includeAnnotation) {
 function createHistogramLegend(id, category) {
 	var width = HISTOGRAM_WIDTH;
 	var height = HISTOGRAM_LEGEND_HEIGHT;
-	var centerX = width / 2;
+	var centerX = width / 2 + 20;
 	var boxSide = 16;
 	var centerPad = 1;
 	var adjY = 17; //adjustment y on legend to match with "Color"
@@ -408,26 +412,26 @@ function createHistogramLegend(id, category) {
 	// draw text
 	var textPad = 4;
 	svg.append('text')
-		.text('denied loan / would pay back')
+		.text('screened / would be good unit')
 		.attr('x', centerX - boxSide - textPad)
 		.attr('y', 2 * boxSide - textPad + adjY)
 		.attr('text-anchor', 'end')
 		.style('fill', '#6c757d');
 	svg.append('text')
-		.text('denied loan / would default')
+		.text('screened / would be bad unit')
 		.attr('x', centerX - boxSide - textPad)
 		.attr('y', boxSide - textPad + adjY)
 		.attr('text-anchor', 'end')
 		.style('fill', '#6c757d');
 
 	svg.append('text')
-		.text('granted loan / pays back')
+		.text('passed / good unit')
 		.attr('x', centerX + boxSide + textPad)
 		.attr('y', 2 * boxSide - textPad + adjY)
 		.attr('text-anchor', 'start')
 		.style('fill', '#6c757d');
 	svg.append('text')
-		.text('granted loan / defaults')
+		.text('passed / bad unit')
 		.attr('x', centerX + boxSide + textPad)
 		.attr('y', boxSide - textPad + adjY)
 		.attr('text-anchor', 'start')
@@ -464,13 +468,13 @@ function createSimpleHistogramLegend(id, category) {
 	// drow text
 	var textPad = 4;
 	svg.append('text')
-		.text('would pay back loan')
+		.text('would be good unit')
 		.attr('x', centerX + boxSide + textPad)
 		.attr('y', boxSide - textPad + adjY)
 		.attr('text-anchor', 'start')
 		.style('fill', '#6c757d');
 	svg.append('text')
-		.text('would default on loan')
+		.text('would be bad unit')
 		.attr('x', lx + boxSide + textPad)
 		.attr('y', boxSide - textPad + adjY)
 		.attr('text-anchor', 'start')
@@ -564,9 +568,9 @@ function createRatePies(id, model, palette, includeAnnotations) {
 		'pie-label', 'pie-number');		
 
 	// add explanations of positive rates
-	explanation(svg, ['percentage of paying', 'applications getting loans'],
+	explanation(svg, ['percentage of good units', 'getting passed'],
 		0, topY);
-	explanation(svg, ['percentage of all', 'applications getting loans'],
+	explanation(svg, ['percentage of all', 'units getting passed'],
 		width / 2, topY);
 
 	model.addListener(function() {
@@ -607,10 +611,10 @@ function createCorrectnessMatrix(id, model) {
 		'pie-label', 'pie-number');
 
 	// add explanation of correct decisions
-	explanation(svg, ['loans granted to paying',
-		'applicants and denied', 'to defaulters'], 0, topY);
-	explanation(svg, ['loans denied to paying',
-		'applicants and granted', 'to defaulters'], width / 2 + 4, topY);
+	explanation(svg, ['correct decision','passed good units',
+		'and screened bad units'], 0, topY);
+	explanation(svg, ['incorrect decision',
+		'passed bad units', 'and screened good units'], width / 2 + 4, topY);
 
 	// add explanation of incrrect
 	model.addListener(function() {
