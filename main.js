@@ -4,19 +4,19 @@
 function main() {
 
 	// set values of true positives vs. false positives
-	var tprValue = 10;
-	var fprValue = -5;
-	var mfgValue = -5;
+	var tprValue = -5;
+	var fprValue = 5;
+	var mfgValue = -1;
 
 	// make models to represent different distributions
 	var distributionExample0 = new GroupModel(makeNormalItems(0, 1, 150, 70, 7)
-		.concat(makeNormalItems(0, 0, 150, 30, 7)), tprValue, fprValue);
+		.concat(makeNormalItems(0, 0, 150, 20, 7)), fprValue, tprValue);
 	var distributionExample1 = new GroupModel(makeNormalItems(0, 1, 150, 60, 10)
-		.concat(makeNormalItems(0, 0, 150, 40, 10)), tprValue, fprValue);
+		.concat(makeNormalItems(0, 0, 150, 30, 10)), fprValue, tprValue);
 
 	// make a model to represent initial example of classification
-	var singleModel = new GroupModel(makeNormalItems(0, 1, 100, 60 ,10)
-		.concat(makeNormalItems(0, 0, 100, 40, 10)), tprValue, fprValue);
+	var singleModel = new GroupModel(makeNormalItems(0, 0, 100, 15 ,10)
+		.concat(makeNormalItems(0, 1, 100, 30, 10)), fprValue, tprValue);
 
 	// need to classify to get colors to look right on thistogram
 	// why lower distribution color is grey without this statement?
@@ -44,7 +44,7 @@ function main() {
 		// 100 of mfgValue is same as # of samples set for makeNormalItems
 		function display(id, value) {
 			var element = document.getElementById(id);
-			value = value + mfgValue * 100
+			value = value + mfgValue * 10 - 20
 			element.innerHTML = '' + value + 'M USD';
 			element.style.color = value < 0 ? '#f00' : 'white';
 		}
@@ -55,7 +55,7 @@ function main() {
 	singleModel.addListener(updateTextDisplays);
 
 	// initialize everything
-	singleModel.classify(50);
+	singleModel.classify(0);
 	singleModel.notifyListeners();
 }
 
@@ -335,7 +335,7 @@ function createHistogram(id, model, noThreshold, includeAnnotation) {
 	var cutoff = svg.append('rect').attr('x', tx - 2).attr('y', topY - 10)
 		.attr('width', 3).attr('height', height - topY).style('fill','white');
 
-	var thresholdLabel = svg.append('text').text('yield threshold: 50')
+	var thresholdLabel = svg.append('text').text('margin threshold: 10')
 		.attr('x', tx)
 		.attr('y', 40)
 		.attr('text-anchor', 'middle')
@@ -352,7 +352,7 @@ function createHistogram(id, model, noThreshold, includeAnnotation) {
 		var rounded = SIDE * Math.round(tx / SIDE);
 		cutoff.attr('x', rounded);
 		var labelX = Math.max(50, Math.min(rounded, width - 70));
-		thresholdLabel.attr('x', labelX).text('yield threshold: ' + t);
+		thresholdLabel.attr('x', labelX).text('margin threshold: ' + t);
 		svg.selectAll('.icon').call(defineIcon);
 	}
 	var drag = d3.drag()
@@ -412,26 +412,26 @@ function createHistogramLegend(id, category) {
 	// draw text
 	var textPad = 4;
 	svg.append('text')
-		.text('screened / would be good unit')
+		.text('loss / quoted rejected')
 		.attr('x', centerX - boxSide - textPad)
 		.attr('y', 2 * boxSide - textPad + adjY)
 		.attr('text-anchor', 'end')
 		.style('fill', '#6c757d');
 	svg.append('text')
-		.text('screened / would be bad unit')
+		.text('win / quoted passed')
 		.attr('x', centerX - boxSide - textPad)
 		.attr('y', boxSide - textPad + adjY)
 		.attr('text-anchor', 'end')
 		.style('fill', '#6c757d');
 
 	svg.append('text')
-		.text('passed / good unit')
+		.text('open / would be rejected')
 		.attr('x', centerX + boxSide + textPad)
 		.attr('y', 2 * boxSide - textPad + adjY)
 		.attr('text-anchor', 'start')
 		.style('fill', '#6c757d');
 	svg.append('text')
-		.text('passed / bad unit')
+		.text('open / would be passed')
 		.attr('x', centerX + boxSide + textPad)
 		.attr('y', boxSide - textPad + adjY)
 		.attr('text-anchor', 'start')
@@ -568,7 +568,7 @@ function createRatePies(id, model, palette, includeAnnotations) {
 		'pie-label', 'pie-number');		
 
 	// add explanations of positive rates
-	explanation(svg, ['percentage of good units', 'getting passed'],
+	explanation(svg, ['percentage of win', 'getting passed'],
 		0, topY);
 	explanation(svg, ['percentage of all', 'units getting passed'],
 		width / 2, topY);

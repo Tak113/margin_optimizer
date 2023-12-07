@@ -3,7 +3,7 @@
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>Threshold Classifier</title>
+	<title>Decision Boundary</title>
 	<!-- CSS only -->
 	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1" crossorigin="anonymous">
 	<link rel="stylesheet" href="./style.css">
@@ -15,191 +15,66 @@
 	<script src="https://d3js.org/d3.v5.min.js"></script>
 	<script src="./main.js"></script>
 
-<!-- nav bar -->
-<nav class="navbar navbar-expand-lg navbar-dark bg-secondary">
-	<div class="container">
-		<a href="#" class="navbar-brand"><h3 class="mb-1">d3 showcase</h2></a>
-		<button class="navbar-toggler" data-toggle="collapse" data-target="#navbarCollapse">
-			<span class="navbar-toggler-icon"></span>
-		</button>
-		<div class="collapse navbar-collapse" id="navbarCollapse">
-			<ul class="navbar-nav ml-auto">
-				<li class="nav-item h5 mb-0">
-					<a href="#" class="nav-link active">boundary</a>
-				</li>
-				<li class="nav-item h5 mb-0">
-					<a href="#" class="nav-link">hierarchy</a>
-				</li>
-				<li class="nav-item h5 mb-0">
-					<a href="#" class="nav-link">modulation</a>
-				</li>
-			</ul>
-		</div>
-	</div>
-</nav>
-
 <section id="scenario" class="py-5 bg-dark">
 	<div class="container">
 
-		<div class="col">
-			<div class="h3 pt-1 pb-2 text-white">Decision Boundary Classifier</div>
-			<div class="pb-5 text-secondary h6 lead">
-				Decision boundary is one of a critical topic being focused as a data science. Here, we will use d3.js to visualize the boundary sensitivity against given indicator - profit in the case - to show how d3 taylor made visualization will help this discussion (recommend to use PC for best visualization result).
-			</div>
-		</div>
-		
-		<div class="col">
-			<div class="h3 py-2 text-white">Boundary in two distributions</div>
-			<p class="text-white">
-				Let's think Tesla will launch new model (let's call model A in the article), and their motor is knows as 50% yield, and major yield loss of the motor is reliability. Assuming that we could somehow create a reliability score for the motor, ranging from 0 to 100. Higher scores represent higher likelihood of good motor unit, while lower scores represent lower likelihood of bad motor unit. If we plot good units and bad units from motor manufacturing against reliability score, we see a 2 distributions, which has same amount (as we've set 50% yield). For a simplicity, we assume that distributions follow gausian distribution.
-			</p>
-			<p class="text-white">
-				Assuming that we would like to set a threshold to either screen or pass the motor for a rest of manufacturing processes - assembly. The purpose is to avoid escapee of bad motor being asembled with other good parts which will end up being scrap.
-			</p>
-			<p class="text-white pb-3">
-				Then, the question is how we should set the threshold? We are showing 2 scenario, either A) 2 distributions are clearly separated, or B) 2 distributions are overwrapped. If distributions are clearly separated, it would be straightforward, we could put threshold in between good and bad unit distribution - it would be ~55 scores in the graph below. However where we should put threshold for the scenario which has overwrapped distributions? Unfortunately this is more realistic case and this is the problem statement that we would like to visualize to help determine the threshold.
-			</p>
-		</div>
-
-		<table class="table">	
-			<tr>
-				<td>&nbsp;</td>	
-				<td colspan=3 class="h4 text-white">	
-					Yield Screening: Two Scenario
-				</td>
-			</tr>	
-			<tr>
-				<td valign="top">
-					<table>
- 						<tr>
- 							<td width="250" valign="top" align="right">
-    					  		<div style="margin-top:44px">
-    					  			<strong class="text-white">Reliability Score</strong><br>
-    					  			<div class="text-secondary h6 small">
-    					  			higher scores represent higher likelihood of good unit
-    					  			</div>
-    					  		</div>
-    						</td>
-    					</tr>
-    					<tr>
-    						<td width="250" valign="bottom" align="right">
-    							<div style="margin-top:160px" class="text-secondary h6 small">
-	    							each circle represents a product,
-    								with light circles showing products passed screening test and dark circles showing products screened
-    							</div>
-    						</td>
-    					</tr>
-    					<tr>
-    						<td width="250" valign="bottom" align="right">
-    							<div style="margin-top:15px"><strong class="text-white">Color</strong></div>
-    						</td>
-    					</tr>
-					</table>
-				</td>
-				<td valign="top">
-					<div class="h5 mb-5 text-white">A. Clean separation</div>
-					<div id="plain-histogram0" class="text-secondary"></div>
-					<div id="plain-histogram-legend0" class="h6 small text-secondary"></div>
-				</td>
-				<td width=1>&nbsp;</td>
-				<td valign="top">
-					<div class="h5 mb-5 text-white">B. Overlapping Categories</div>
-					<div id="plain-histogram1" class="text-secondary"></div>
-					<div id="plain-histogram-legend1" class="text-secondary h6 small"></div>
-				</td>
-			</tr>
-		</table>
-
-		<div class="col">
-			<div class="h3 pt-5 pb-2 text-white">Profit Assumptions</div>
-			<p class="text-white pb-3">
-				Let's assume that Tesla new model A is aimed for mass audience, hence sales prices is set at $30k with 1/3 being as a cost (for a simplicity all cost is assumed as manufacturing cost). Now motor division is discussing if they should have this reliability test at the end of motor as motor is major contributor for entire manufacturing cost, say $5k being as motor manufacturing cost so motor price out of entire sales price $30k is $15k. Their concern is that scrap cost at test drive at final vhiecle inspection, if bad motor is passing and is assembled with other good parts and rejected as a whole car at final vheicle inspection, the company needs to scrap whole parts because of the mortor, total cost is $10k being scrapped which is entire manufacturing cost including $5k of bad motor and $5k for other good parts. Also assume life time volume of the vheicle demand being 100k units. In the case return on investment on the screening test at end of line motor manufacturing is given as;<br>
-				<code class="formula">Profit = f_motorprofit(yield) - f_scrap(yield) - motor mfg cost</code> <br>
-				where motor profit and scrap cost are function of threshold - which we will set along with reliability score to judge either screening out to avoid escapee or passing to rest of assembly manufacturing. Meanwhile motor manufacting cost is static aging given demond volume to be manufactured.
-			</p>
-
-			<div class="h3 pt-1 pb-2 text-white">Threshold Metrics</div>
-			<p class="text-white">
-				Couple additional metric are set to see threshold sensitivity, such as correct/incorrect on a decision on threshold along with the score, and true positive rate and positive rate based on the threshold on the score.
-			</p>
-			<p class="text-white">
-				Known problem statement is that most correct percent does not always give us best profit. In the example here, most correct % on threshold is 84% ranging from 48 to 52 of the score, and it gives us $220M to $280M of ROI. Meanwhile best profit is $285M with 47 of the score and 83% of correctness. Other things we might as well remember is that 100% of true positive rate is far from best profit and we need to compromise screening out good unit to avoid bad unit escapees. For example, best profict $285M is at 92% of true positive rate and we screen out 8% of known good
-			</p>
-			<p class="text-white">
-				So, to answer where we should set threshold depends on which indicato we will prioritise, such as correctness of the threshold, maximizing profit, etc.
-			</p>
-			<p class="text-white pb-3">
-				This is based on simple frame work, and the simulation could be complicated once we starts applying different distribution for good and bad product, of once we we think multiple group, such as different type of vheicle or location of manufacturing. Here we only limit to show fundamentals of decision threshold framing.
-			</p>
-		</div>
-
-
 		<table class="table">
 			<tr>
-				<td>&nbsp;</td>
-				<td colspan=3>
-					<div class="h4 text-white">Simulating Yield Thresholds</div>
+				<td colspan=4>
+					<div class="h4 text-white">Find an Optimum Gross Margin</div>
 					<div class="text-secondary h6">
-						Drag the white threshold bar left or right to change the cut-offs for product screening
+						If we continue storing win-loss dataset from quotes and map out win and loss count as a function of gross margin,
+						it is expected that those empirical data for win and loss quotes will create a 2 different sets of distribution.
+						From distributions, we could then generate probability of Win at each gross margin. 
+						Given a total life time volume and average ASP from each packaging type, expected revenue at each gross margin is computed as; <br>
+						<code class="formula">f_Profit(GM) = ASP * Volume * GM * Win_Prob(GM) - Cost of Sales * Total N of Quotes * Loss_Prob(GM)</code> <br>
+						Drag the white threshold bar left or right to change the anchor point of gross margin
 					</div>
 				</td>
+				<!-- <td>&nbsp;</td> -->
 			</tr>
 			<tr>
 				<td valign="top">
 					<table>
  						<tr>
  							<td width="250" valign="top" align="right">
-    					  		<div style="margin-top:44px">
-    					  			<strong class="text-white">Reliability Score</strong><br>
+    					  		<div style="margin-top:62px">
+    					  			<strong class="text-white">Gross Margin %</strong><br>
     					  			<div class="text-secondary h6 small">
-    					  			higher scores represent higher likelihood of good unit
+    					  			higher scores represent higher profit
     					  			</div>
     					  		</div>
     						</td>
     					</tr>
     					<tr>
     						<td width="250" valign="bottom" align="right">
-    							<div style="margin-top:160px" class="text-secondary h6 small">
-	    							each circle represents a product,
-    								with light circles showing products passed screening test and dark circles showing products screened
+    							<div style="margin-top:145px" class="text-secondary h6 small">
+	    							each circle represents a quote,
+    								with red circles showing passed Win-Loss event and blue circles showing quotes opened
     							</div>
     						</td>
     					</tr>
     					<tr>
     						<td width="250" valign="bottom" align="right">
-    							<div style="margin-top:15px"><strong class="text-white">Color</strong></div>
+    							<div style="margin-top:22px"><strong class="text-white">Color</strong></div>
     						</td>
     					</tr>
 					</table>
 				</td>
 				<td valign="top">
-					<div class="h5 mb-5 text-white">Threshold Decision</div>
+					<div class="h5 mb-5 text-white">Decision Boundary Modeling</div>
 					<div id="single-histogram0" class="text-secondary"></div>
 					<div id="single-histogram-legend0" class="h6 small text-secondary"></div>
 				</td>
-				<td width=30>&nbsp;</td>
+				<td width="0">&nbsp;</td>
 				<td valign="top">
 					<div class="h5 mb-4 ml-2 text-white">Outcome</div>
 					<div id="single-correct0" class="text-secondary h6 small"></div>
 					<div id="single-pies0" class="text-secondary h6 small"></div>
-					<div class="h6 text-white">Profit: <span id="single-profit0"></span></div>
+					<div class="h4 text-white" style="margin-top:50px">Profit: <span id="single-profit0"></span></div>
 				</td>
 			</tr>
 		</table>
-
-		<div class="col pt-4">
-			<div class="h3 pt-5 pb-2 text-white">Potential Applications</div>
-			<p class="text-white pb-3">
-				In manufacturing, this framework could be applied for a manufacturing spec definition, product binning against its performance. In reference article from google AI lab uses loan applicants either paying or default. Generally it could potentially be applied for any vague clasiffication problem
-			</p>
-			<p class="text-secondary">
-				Reference : https://research.google/teams/brain/pair/
-			</p>
-		</div>
-
-		<footer class='text-center text-secondary'>
-			datak 2020 <a href="http://datak.biz" class="footer text-secondary">(http://datak.biz)</a>
-		</footer>
 
 	</div>
 </section>
